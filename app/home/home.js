@@ -28,12 +28,11 @@
         'PEEK.BOM': 'PEEK.botswanaschools.prod.Encounters.type.vision_triage.status.finished.gender.male._observations__healthy_eyes.false._observations__triage_outcome_refraction.triage_outcome_refraction_none'
     };
 
-    // The initialize function must be run each time a new page is loaded
-    Office.initialize = function (reason) {
+    Office.initialize = function () {
         $(document).ready(function () {
             app.initialize();
-            $('#peek-refresh-stats').click(refreshStats);
             app.showNotification('INFO', 'Welcome to the Peek Stats Add-in');
+            $('#peek-refresh-stats').click(refreshStats);
         });
     };
 
@@ -41,33 +40,28 @@
         return Excel.run(ctx => {
 
             app.showNotification('INFO', 'Statistics are being refreshed...');
+
             // Load all namedItems.
             return ctx.sync(ctx.workbook.names.load(['items']))
 
-            // Load the name for each item. (Note [...x] converts array-like-object to an array.)
-                .then(namedItems =>[...namedItems.items].map(item => item.load('name')))
+            // Load each item's name. [...x] converts array-like-object to an array.
+                .then(namedItems => [...namedItems.items].map(item => item.load('name')))
                 .then(ctx.sync)
 
                 // Update the values for PEEK ranges only
                 .then(namedItems =>
-                    Promise.all(namedItems
-                        .filter(item => /^PEEK/.test(item.name))
+                    Promise.all(namedItems.filter(item => /^PEEK/.test(item.name))
                         .map(item => get(item.name)
                             .then(res => item.getRange().values = [[res.count]])
-                            .catch(err => console.log('Error', err)))
+                            .catch(onError)) // Keep going on per-item errors.
                     ))
-                .then(() => app.showNotification('INFO', 'Statistics have been refreshed...'))
-                .catch(error => {
-                    if (error instanceof OfficeExtension.Error) {
-                        console.log("Debug info: " + JSON.stringify(error.debugInfo));
-                    }
-                    console.log("Error: " + error);
 
-                });
+                .then(() => app.showNotification('INFO', 'Statistics have been refreshed...'))
+                .catch(onError);
         })
     }
 
-    /**
+     /**
      *  Maps and encoded name to a URL. E.g
      *
      *  PEEK.kenyaschools.test.Encounters.type.vision_screening._observations__gender.female =>
@@ -91,20 +85,30 @@
             let property = parts.shift().replace('__', '.'), value = parts.shift();
             where[property] = /^__/.test(value) ? {neq: value.substr(2)} : value;
         }
-        console.log(name, '\n', where );
+        // console.log(name, '\n', where);
         return `https://${project}${env}.peek.vision/api/${collection}/count?where=${encodeURIComponent(JSON.stringify(where))}`;
     }
 
     function get(name) {
-        let url;
+
         return Promise.resolve()
-            .then(()=>mapNameToUrl(name))
-            .then(res => url=res)
-            .then(url => $.ajax({url}))
-            // .then(res => {
-            //     console.log(name, url, res);
-            //     return res;
-            // });
+        // inside promise to handle errors
+            .then(() => mapNameToUrl(name))
+            .then(url => {
+                return $.ajax({url})
+                    .then(res => {
+                        // console.log(name, url, res);
+                        return res;
+                    });
+            });
     }
+
+    function onError(error) {
+        console.log("Error: " + error);
+        if (error instanceof OfficeExtension.Error) {
+            console.log("Debug info: " + JSON.stringify(error.debugInfo));
+        }
+    }
+
 })();
 
