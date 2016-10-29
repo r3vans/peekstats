@@ -1,14 +1,11 @@
 # Proof-of-Concept Excel Add-In for Peek Statistics
 
 ## Overview
-This add-in allows Peek stats to be embeded in a spreadsheet and refreshed 
-on demand without using macros.
+This add-in allows Peek stats to be embeded in a spreadsheet and refreshed on demand without using macros.
 
-Cells are 'tagged' for stats using range names that start with 'PEEK'. 
-The names may encode queries or reference canned queries.
+Cells are 'tagged' for stats using range names that start with 'PEEK'. The names may encode queries or reference canned queries.
 
-Currently stats are simply counts of encounters or orders with selection
-criteria.
+Currently stats are simply counts of encounters or orders with selection criteria.
 
 ## Encoded Queries
 
@@ -17,6 +14,7 @@ Here's an example
     PEEK.kenyaschools.test.Encounters.type.vision_screening._observations__gender.female
   
 The rules are simple. Separate fields with a "."
+
 * PEEK
 * Project (kenyaschools, botswanaschools etc.)
 * Environment (test, preprod, prod)
@@ -61,11 +59,9 @@ Defined the same way in code but referenced with a short code.
 
 ## Constraints
 
-Names were chosen as maintainable cell metatdata. However they are limited
-in composition (hence __) and length (the real reason for canned queries.
+Names were chosen as maintainable cell metatdata. However they are limited in composition (hence the use of __) and length (a major reason for for canned queries).
 
-Comments are attractive altenatives but are not (yet?) accessible through 
-the JavaScript API.
+Using comments sounds like an attractive altenative but comments are not (yet?) accessible through the JavaScript API.
 
 ## Next Steps
 
