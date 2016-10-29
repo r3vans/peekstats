@@ -57,6 +57,12 @@ Defined the same way in code but referenced with a short code.
       'PEEK.BOF': Botsw non-refractive female 'PEEK.botswanaschools.prod.Encounters.type.vision_triage.status.finished.gender.female._observations__healthy_eyes.false._observations__triage_outcome_refraction.triage_outcome_refraction_none',
       'PEEK.BOM': Botsw non-refractive male   'PEEK.botswanaschools.prod.Encounters.type.vision_triage.status.finished.gender.male._observations__healthy_eyes.false._observations__triage_outcome_refraction.triage_outcome_refraction_none'
 
+## Deployment
+
+Copy this project to an SSL-enabled website. Share a copy of *manifest-peek-stats-addin.xml* adjusted so that SourceLocation matches the deployment location:
+
+    <SourceLocation DefaultValue="https://**host/root_path**/app/home/home.html"/>
+
 ## Constraints
 
 Names were chosen as maintainable cell metatdata. However they are limited in composition (hence the use of __) and length (a major reason for for canned queries).
