@@ -1,3 +1,23 @@
+/**
+ * Proof-of-concept Excel Web Add-in to insert live Peek counts into a workbook.
+ *
+ * Target cells are identified by a name starting with "PEEK"
+ * The name is encoded to represent the count query or a "canned" query. Details in mapNameToUrl.
+ *
+ *
+ * Notes.
+ * Why add-ins?
+ * Add-ins are used to save embedding macros in sheets that might be shared after population.
+ *
+ * Why names?
+ * Names are used to encode queries as a better alternative for cell metadata could not be found.
+ * Comments would have been better - freer of length and composition constraints - but unfortunately are not accessible
+ * through the js API.
+ *
+ *
+ */
+
+
 (function () {
     'use strict';
     const CANNED_QUERIES = {
